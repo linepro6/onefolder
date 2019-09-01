@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title><%= title %></title>
+    <link rel="icon" href="data:;base64,=">
+</head>
+
+<body>
+    <h1><%= title %></h1>
+    <div style="margin: 0 0 0 3%">
+        <div style="display: inline-block; width: 50%;">Name</div>
+        <div style="display: inline-block; width: 30%;">Last Update</div>
+        <div style="display: inline-block; width: 10%;">Size</div>
+    </div>
+    <hr>
+    <ul>
+        <% list.forEach(elem => { %>
+        <li>
+            <div style="display: inline-block; width: 50%;"><a href="<%= elem.name %>"><%= elem.name %></a></div>
+            <div style="display: inline-block; width: 30%;"><%= elem.time %></div>
+            <div style="display: inline-block; width: 10%;"><%= elem.size %></div>
+        </li>
+        <% }); %>
+    </ul>
+    <hr>
+    <p>Last Update: <%= time %></p>
+</body>
+
+</html>

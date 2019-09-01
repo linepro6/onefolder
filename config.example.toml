@@ -1,0 +1,14 @@
+# This is an example config, please edit it and rename it to "config.toml".
+title = "oneindex-nodejs"
+
+[onedrive]
+client_id = "example"
+client_secret = "example"
+redirect_uri_register = "https://example.org/redirect"
+
+[server]
+host_url = "https://oneindex-nodejs.example.org"
+root_path = "/path/"
+
+[test]
+listen = 3000  #port or unix socket
