@@ -87,7 +87,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-
-#temp files
-token.json
+config.example.toml
 .gitignore
+LICENSE
+README.md

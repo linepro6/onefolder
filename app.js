@@ -276,7 +276,7 @@ const CACHE = new cache_mgr();
 
 app.get('/favicon.ico', async function (req, res) { res.status(404); res.send(); })
 app.get('/*', async function (req, res) {
-    const fetch_path = "/" + CONFIG.server.root_path.strip("/") + req.path;
+    const fetch_path = "/" + CONFIG.server.root_path.strip("/") + decodeURI(req.path);
     const fetch_dir = fetch_path.slice(0, fetch_path.lastIndexOf("/") + 1);
     const fetch_file = fetch_path.slice(fetch_path.lastIndexOf("/") + 1);
     const list_folder_content = await CACHE.get(fetch_dir);
