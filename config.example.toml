@@ -1,10 +1,5 @@
 # This is an example config, please edit it and rename it to "config.toml".
-title = "oneindex-nodejs"
-
-[onedrive]
-client_id = "example"
-client_secret = "example"
-redirect_uri_register = "https://example.org/redirect"
+title = "onefolder"
 
 [server]
 host_url = "https://oneindex-nodejs.example.org"

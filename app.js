@@ -133,49 +133,6 @@ class onedrive_client {
             })
         return link;
     }
-    async auth(code) {
-        const post_data = querystring.stringify({
-            "client_id": this._client_id,
-            "client_secret": this._client_secret,
-            "redirect_uri": this._redirect_uri_register,
-            "grant_type": "authorization_code",
-            "code": code
-        });
-        let res_obj = null;
-        await axios.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", post_data, { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
-            .then(function (resp) {
-                // handle success
-                res_obj = resp.data;
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            });
-
-        this._token.access_token = res_obj.access_token;
-        this._token.time = Date.now();
-        this._authed_headers = {
-            "Authorization": "bearer " + this._token.access_token,
-            "Content-Type": "application/json"
-        };
-        await axios.get(this._api_url + "me/drive", { headers: this._authed_headers })
-            .then(function (resp) {
-                // handle success
-                res_obj = resp.data;
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            });
-        this._token.account = res_obj.owner.user.email ? res_obj.owner.user.email : res_obj.owner.user.displayName;
-        this._token.drive = res_obj.id;
-        fs.writeFileSync('/tmp/token.json', JSON.stringify(this._token));
-        this.login = true;
-    }
-    get_login_url(final) {
-        const host = CONFIG.server.host_url;
-        return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${this._client_id}&scope=${encodeURI("offline_access files.readwrite.all")}&response_type=code&redirect_uri=${this._redirect_uri_register}&state=${host + "/:auth" + "*" + final}`;
-    }
 }
 const ONEDRIVE = new onedrive_client();
 class cache_obj {
@@ -318,18 +275,6 @@ class cache_mgr {
 const CACHE = new cache_mgr();
 
 app.get('/favicon.ico', async function (req, res) { res.status(404); res.send(); })
-app.get('/[:]auth', async function (req, res) {
-    if (!req.query.code || !req.query.final) {
-        res.status(400);
-        res.send("400 Error: Bad Request");
-        return;
-    }
-    await ONEDRIVE.auth(req.query.code);
-    res.redirect(302, req.query.final);
-});
-app.get('/[:]login', async function (req, res) {
-    res.redirect(ONEDRIVE.get_login_url(CONFIG.server.host_url));
-});
 app.get('/*', async function (req, res) {
     const fetch_path = "/" + CONFIG.server.root_path.strip("/") + req.path;
     const fetch_dir = fetch_path.slice(0, fetch_path.lastIndexOf("/") + 1);
