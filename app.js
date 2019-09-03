@@ -100,7 +100,7 @@ class onedrive_client {
         console.log("ONEDRIVE: fetch list for " + decodeURI(path) + " in " + date.toLocaleString());
         let req_path = "";
         if (path !== "/") {
-            req_path = "/drives/" + this._token.drive + "/root:/" + path.strip("/") + ":/children";
+            req_path = "/drives/" + this._token.drive + "/root:/" + encodeURI(path.strip("/")) + ":/children";
         }
         else req_path = "/drives/" + this._token.drive + "/root/children";
         let content = null;
