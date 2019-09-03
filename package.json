@@ -1,12 +1,14 @@
 {
-  "name": "oneindex-nodejs",
+  "name": "onefolder",
   "version": "0.0.1",
-  "description": "Oneindex in nodejs",
+  "description": "Onedrive directroy listing by node.js",
   "main": "app.js",
   "scripts": {
     "test": "node app.js"
   },
-  "engine": "v12.9.1",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "author": "linepro6",
   "license": "MIT",
   "dependencies": {
