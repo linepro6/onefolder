@@ -35,23 +35,22 @@ function render_size(value) {
 
 class onedrive_client {
     constructor() {
-        this._client_id = CONFIG.onedrive.client_id;
-        this._client_secret = CONFIG.onedrive.client_secret;
-        this._redirect_uri_register = CONFIG.onedrive.redirect_uri_register;
+        const token = JSON.parse(fs.readFileSync(path.join(__dirname, 'token.json'), 'utf-8'))
+        this._client_id = token.client_id;
+        this._client_secret = token.client_secret;
+        this._redirect_uri_register = token.redirect_uri;
         this._api_url = "https://graph.microsoft.com/v1.0/";
-        try {
-            const data = fs.readFileSync('/tmp/token.json', 'utf-8');
-            this._token = JSON.parse(data);
-        } catch (e) {
-            this._token = new Object();
-            this.login = false;
-            return;
+        this._token = {
+            refresh_token: token.refresh_token,
+            time: 0,
+            drive: "",
+            access_token: "",
+            scope: token.scope
         }
         this._authed_headers = {
             "Authorization": "bearer " + this._token.access_token,
             "Content-Type": "application/json"
         }
-        this.login = true;
     }
     async refresh_token() {
         if (Date.now() - this._token.time > 3500 * 1000) {
@@ -67,17 +66,27 @@ class onedrive_client {
             await axios.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", post_data, { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
                 .then(function (resp) {
                     // handle success
-                    let res_obj = resp.data;
-                    res_obj.time = Date.now();
-                    res_obj.account = self._token.account;
-                    res_obj.drive = self._token.drive;
-                    self._token = res_obj;
+                    self._token.time = Date.now();
+                    self._token.access_token = resp.data.access_token;
                     self._authed_headers = {
                         "Authorization": "bearer " + self._token.access_token,
                         "Content-Type": "application/json"
                     };
-                    fs.writeFileSync('/tmp/token.json', JSON.stringify(self._token));
+                    //fs.writeFileSync('/tmp/token.json', JSON.stringify(self._token));
                     console.log("Refresh token success!");
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                    throw error.response;
+                });
+        }
+        if (!this._token.drive) {
+            var self = this;
+            await axios.get(this._api_url + "me/drive", { headers: this._authed_headers })
+                .then(function (resp) {
+                    // handle success
+                    self._token.drive = resp.data.id;
                 })
                 .catch(function (error) {
                     // handle error
@@ -322,10 +331,6 @@ app.get('/[:]login', async function (req, res) {
     res.redirect(ONEDRIVE.get_login_url(CONFIG.server.host_url));
 });
 app.get('/*', async function (req, res) {
-    if (!ONEDRIVE.login) {
-        res.redirect(302, '/:login');
-        return;
-    }
     const fetch_path = "/" + CONFIG.server.root_path.strip("/") + req.path;
     const fetch_dir = fetch_path.slice(0, fetch_path.lastIndexOf("/") + 1);
     const fetch_file = fetch_path.slice(fetch_path.lastIndexOf("/") + 1);
