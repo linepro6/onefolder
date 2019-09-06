@@ -1,15 +1,16 @@
 {
   "name": "onefolder",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Onedrive directroy listing by node.js",
   "main": "app.js",
   "scripts": {
-    "test": "node app.js"
+    "serve": "node app.js"
   },
   "engines": {
     "node": ">=10.0.0"
   },
   "author": "linepro6",
+  "repository": "github:linepro6/onefolder",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.19.0",
