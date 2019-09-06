@@ -277,7 +277,7 @@ const CACHE = new cache_mgr();
 
 app.get('/favicon.ico', async function (req, res) { res.status(404); res.send(); })
 app.get('/*', async function (req, res) {
-    const fetch_path = "/" + CONFIG.server.root_path.strip("/") + decodeURI(req.path);
+    const fetch_path = "/" + CONFIG.common.root_path.strip("/") + decodeURI(req.path);
     const fetch_dir = fetch_path.slice(0, fetch_path.lastIndexOf("/") + 1);
     const fetch_file = fetch_path.slice(fetch_path.lastIndexOf("/") + 1);
     const list_folder_content = await CACHE.get(fetch_dir);
@@ -341,7 +341,7 @@ app.get('/*', async function (req, res) {
         const time = date.toISOString();
         html.time = time.slice(0, time.indexOf("T")) + " " + time.slice(time.indexOf("T") + 1, time.indexOf("."));
         res.set('Content-Type', 'text/html');
-        res.render(CONFIG.server.view, html);
+        res.render(CONFIG.common.view, html);
     }
     else {
         res.status(404);
@@ -349,4 +349,4 @@ app.get('/*', async function (req, res) {
     }
 });
 
-app.listen(CONFIG.test.listen, () => console.log("Run Success On " + CONFIG.test.listen + "!"));
+app.listen(CONFIG.server.listen, () => console.log("Run Success On " + CONFIG.server.listen + "!"));

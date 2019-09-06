@@ -2,8 +2,8 @@
 title = "onefolder"
 
 [server]
+listen = 3000  #port or unix socket
+
+[common]
 root_path = "/path/"
 view = "chromium"
-
-[test]
-listen = 3000  #port or unix socket
