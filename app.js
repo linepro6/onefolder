@@ -29,7 +29,8 @@ function render_size(value) {
     index = Math.floor(Math.log(srcsize) / Math.log(1024));
     let size = srcsize / Math.pow(1024, index);
     //保留的小数位数
-    size = size.toFixed(2);
+    if (index == 0) size = size.toFixed(0);
+    else size = size.toFixed(1);
     return size + " " + unitArr[index];
 }
 
@@ -287,7 +288,7 @@ app.get('/*', async function (req, res) {
     }
     let html = new Object();
     html.list = new Array();
-    if (req.path !== "/") html.list.push({ name: "../", time: "-", size: '-' });
+    html.root = (req.path === "/");
     const list = list_folder_content.list;
     for (let i = 0; i < list.length; ++i) {
         if (fetch_file === "") {
@@ -313,8 +314,8 @@ app.get('/*', async function (req, res) {
                 res.send(hint);
                 return;
             }
-            if (list[i].type === "folder") html.list.push({ name: list[i].name + "/", time: list[i].time, size: list[i].size });
-            else html.list.push({ name: list[i].name, time: list[i].time, size: list[i].size });
+
+            html.list.push(list[i]);
         }
         if (fetch_file === list[i].name) {
             if (!list[i].folder) {
@@ -337,9 +338,10 @@ app.get('/*', async function (req, res) {
     if (fetch_file === "") {
         html.title = "Onedrive directory listing for " + decodeURI(req.path);
         const date = new Date(list_folder_content.updated_time);
-        html.time = date.toLocaleString();
+        const time = date.toISOString();
+        html.time = time.slice(0, time.indexOf("T")) + " " + time.slice(time.indexOf("T") + 1, time.indexOf("."));
         res.set('Content-Type', 'text/html');
-        res.render("list.ejs", html);
+        res.render(CONFIG.server.view, html);
     }
     else {
         res.status(404);
@@ -347,4 +349,4 @@ app.get('/*', async function (req, res) {
     }
 });
 
-app.listen(CONFIG.test.listen, () => console.log("Run Success!"));
+app.listen(CONFIG.test.listen, () => console.log("Run Success On " + CONFIG.test.listen + "!"));

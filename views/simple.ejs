@@ -9,16 +9,16 @@
 
 <body>
     <h1><%= title %></h1>
-    <div style="margin: 0 0 0 3%">
-        <div style="display: inline-block; width: 50%;">Name</div>
-        <div style="display: inline-block; width: 30%;">Last Update</div>
-        <div style="display: inline-block; width: 10%;">Size</div>
-    </div>
     <hr>
     <ul>
+        <% if (!root) { %>
+        <li><a href="../">../</a></li>
+        <% } %>
         <% list.forEach(elem => { %>
         <li>
-            <div style="display: inline-block; width: 50%;"><a href="<%= elem.name %>"><%= elem.name %></a></div>
+            <div style="display: inline-block; width: 50%;"><a
+                    href="<%= elem.name + (elem.type == "folder" ? "/" : "") %>"><%= elem.name + (elem.type == "folder" ? "/" : "") %></a>
+            </div>
             <div style="display: inline-block; width: 30%;"><%= elem.time %></div>
             <div style="display: inline-block; width: 10%;"><%= elem.size %></div>
         </li>

@@ -2,8 +2,8 @@
 title = "onefolder"
 
 [server]
-host_url = "https://oneindex-nodejs.example.org"
 root_path = "/path/"
+view = "chromium"
 
 [test]
 listen = 3000  #port or unix socket
