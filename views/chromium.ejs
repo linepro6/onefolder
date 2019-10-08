@@ -3,8 +3,11 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title %></title>
     <link rel="icon" href="data:;base64,=">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/github-markdown-css@3.0.1/github-markdown.min.css">
     <style>
         h1 {
             border-bottom: 1px solid #c0c0c0;
@@ -63,34 +66,64 @@
             padding: 10px;
             display: none;
         }
+
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .filelist-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 15px;
+        }
     </style>
 </head>
 
 <body>
-    <h1><%= title %></h1>
-    <div id="parentDirLinkBox" style="display: <%= root ? "none" : "block" %>;">
-        <a id="parentDirLink" class="icon up" href="../">
-            <span id="parentDirText">[Parent Dir]</span>
-        </a>
+    <% if (HEAD) { %>
+    <article class="markdown-body">
+        <%- HEAD %>
+    </article>
+    <hr>
+    <% } %>
+    <div class="filelist-body">
+        <h1><%= title %></h1>
+        <div id="parentDirLinkBox" style="display: <%= root ? "none" : "block" %>;">
+            <a id="parentDirLink" class="icon up" href="../">
+                <span id="parentDirText">[Parent Dir]</span>
+            </a>
+        </div>
+        <table>
+            <thead>
+                <tr class="header" id="theader">
+                    <th>Name</th>
+                    <th class="detailsColumn">Size</th>
+                    <th class="detailsColumn">Last Update</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <% list.forEach(elem => { %>
+                <tr>
+                    <td><a class="icon <%= elem.type == "folder" ? "dir" : "file" %>"
+                            href="<%= elem.name + (elem.type == "folder" ? "/" : "") %>"><%= elem.name %></a></td>
+                    <td class="detailsColumn"><%= elem.size %></td>
+                    <td class="detailsColumn"><%= elem.time %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <p>Last Update: <%= time %> UTC</p>
     </div>
-    <table>
-        <thead>
-            <tr class="header" id="theader">
-                <th>Name</th>
-                <th class="detailsColumn">Size</th>
-                <th class="detailsColumn">Last Update</th>
-            </tr>
-        </thead>
-        <tbody id="tbody">
-            <% list.forEach(elem => { %>
-            <tr>
-                <td><a class="icon <%= elem.type == "folder" ? "dir" : "file" %>"
-                        href="<%= elem.name + (elem.type == "folder" ? "/" : "") %>"><%= elem.name %></a></td>
-                <td class="detailsColumn"><%= elem.size %></td>
-                <td class="detailsColumn"><%= elem.time %></td>
-            </tr>
-            <% }); %>
-        </tbody>
-    </table>
-    <p>Last Update: <%= time %></p>
+    <% if (readme) { %>
+    <hr>
+    <article class="markdown-body">
+        <%- readme %>
+    </article>
+    <% } %>
 </body>

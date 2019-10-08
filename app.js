@@ -1,4 +1,3 @@
-//Ver 0.0.1(alpha)
 const express = require('express');
 require('express-async-errors');
 const app = express();
@@ -7,7 +6,9 @@ const axios = require('axios');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const toml = require('toml');
-const path = require('path')
+const path = require('path');
+const showdown  = require('showdown');
+const md_converter = new showdown.Converter();
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 const CONFIG = toml.parse(fs.readFileSync(path.join(__dirname, 'config.toml'), 'utf-8'));
@@ -36,7 +37,7 @@ function render_size(value) {
 
 class onedrive_client {
     constructor() {
-        const token = JSON.parse(fs.readFileSync(path.join(__dirname, 'token.json'), 'utf-8'))
+        const token = JSON.parse(fs.readFileSync(path.join(__dirname, 'token.json'), 'utf-8'));
         this._client_id = token.client_id;
         this._client_secret = token.client_secret;
         this._redirect_uri_register = token.redirect_uri;
@@ -145,6 +146,9 @@ class cache_obj {
         this.time = 0;
         this.lastModifiedDateTime = "";
         this.size = 0;
+
+        this.head_html = "";
+        this.readme_html = "";
     }
 }
 
@@ -216,7 +220,7 @@ class cache_mgr {
         for (let i = 0; i < cur_node.current.length; ++i) {
             ret_arr.push({ name: cur_node.current[i].name, type: "file", id: cur_node.current[i].id, size: cur_node.current[i].size, time: cur_node.current[i].lastModifiedDateTime });
         }
-        return { error: null, list: ret_arr, updated_time: cur_node.time };
+        return { error: null, list: ret_arr, updated_time: cur_node.time, head_html: cur_node.head_html, readme_html: cur_node.readme_html };
     }
     async update(path = "/") {
         let content = null;
@@ -264,6 +268,32 @@ class cache_mgr {
                 cur_node.child.push(node);
             }
             else {
+                if (list[i].name === "HEAD.md") {
+                    await axios.get(await ONEDRIVE.get_download_link(list[i].id))
+                        .then(function (resp) {
+                            // handle success
+                            const html = md_converter.makeHtml(resp.data);
+                            cur_node.head_html = html;
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                    continue;
+                }
+                if (list[i].name === "readme.md") {
+                    await axios.get(await ONEDRIVE.get_download_link(list[i].id))
+                        .then(function (resp) {
+                            // handle success
+                            const html = md_converter.makeHtml(resp.data);
+                            cur_node.readme_html = html;
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                    continue;
+                }
                 let time = list[i].lastModifiedDateTime;
                 time = time.slice(0, time.indexOf("T")) + " " + time.slice(time.indexOf("T") + 1, time.indexOf("Z"));
                 const size = render_size(list[i].size);
@@ -277,7 +307,7 @@ const CACHE = new cache_mgr();
 
 app.get('/favicon.ico', async function (req, res) { res.status(404); res.send(); })
 app.get('/*', async function (req, res) {
-    const fetch_path = "/" + CONFIG.common.root_path.strip("/") + decodeURI(req.path);
+    const fetch_path = ((CONFIG.common.root_path != "" && CONFIG.common.root_path != "/") ? ("/" + CONFIG.common.root_path.strip("/")) : "") + decodeURI(req.path);
     const fetch_dir = fetch_path.slice(0, fetch_path.lastIndexOf("/") + 1);
     const fetch_file = fetch_path.slice(fetch_path.lastIndexOf("/") + 1);
     const list_folder_content = await CACHE.get(fetch_dir);
@@ -340,6 +370,8 @@ app.get('/*', async function (req, res) {
         const date = new Date(list_folder_content.updated_time);
         const time = date.toISOString();
         html.time = time.slice(0, time.indexOf("T")) + " " + time.slice(time.indexOf("T") + 1, time.indexOf("."));
+        html.HEAD = list_folder_content.head_html;
+        html.readme = list_folder_content.readme_html;
         res.set('Content-Type', 'text/html');
         res.render(CONFIG.common.view, html);
     }
