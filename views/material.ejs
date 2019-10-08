@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %></title>
+    <link rel="icon" href="data:;base64,=">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/material-design-lite@1.3.0/dist/material.amber-blue.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/material-icons@0.3.1/iconfont/material-icons.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/material-design-lite@1.3.0/dist/material.min.js"
+        integrity="sha256-PCfu4+fnQrp4wNmVbjN1eaX4LbOvOejab0UOhjLezrw=" crossorigin="anonymous"></script>
+    <style>
+        .demo-ribbon {
+            width: 100%;
+            height: 40vh;
+            background-color: #3F51B5;
+            flex-shrink: 0;
+        }
+
+        .demo-main {
+            margin-top: -35vh;
+            flex-shrink: 0;
+        }
+
+        .demo-header .mdl-layout__header-row {
+            padding-left: 40px;
+        }
+
+        .demo-container {
+            max-width: 1600px;
+            width: calc(100% - 16px);
+            margin: 0 auto;
+        }
+
+        .demo-content {
+            border-radius: 2px;
+            padding: 30px 56px;
+            margin-bottom: 80px;
+        }
+
+        .demo-layout.is-small-screen .demo-content {
+            padding: 40px 28px;
+        }
+
+        .demo-content h3 {
+            margin-top: 15px;
+        }
+
+        .demo-footer {
+            padding-left: 40px;
+        }
+
+        .demo-footer .mdl-mini-footer--link-list a {
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+        <header
+            class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title"><%= title %></span>
+                <div class="mdl-layout-spacer"></div>
+            </div>
+        </header>
+        <div class="demo-ribbon"></div>
+        <main class="demo-main mdl-layout__content">
+            <% if (HEAD) { %>
+            <div class="demo-container mdl-grid">
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+                <div
+                    class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+                    <%- HEAD %>
+                </div>
+            </div>
+            <% } %>
+            <div class="demo-container mdl-grid">
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+                <div
+                    class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr class="header" id="theader">
+                                <th></th>
+                                <th class="mdl-data-table__cell--non-numeric" style="width: 100%">Name</th>
+                                <th class="mdl-data-table__cell--non-numeric">Size</th>
+                                <th class="mdl-data-table__cell--non-numeric">Last Update</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <% if (!root) { %>
+                            <tr>
+                                <td><i class="material-icons">arrow_upward</i>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric"><a class="mdl-chip" href=".."><span
+                                            class="mdl-chip__text">..</span></a>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric"></td>
+                                <td class="mdl-data-table__cell--non-numeric"></td>
+                            </tr>
+                            <% } %>
+                            <% list.forEach(elem => { %>
+                            <tr>
+                                <td><i
+                                        class="material-icons"><%= elem.type == "folder" ? "folder" : "insert_drive_file" %></i>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric"><a class="mdl-chip"
+                                        href="<%= elem.name + (elem.type == "folder" ? "/" : "") %>"><span
+                                            class="mdl-chip__text"><%= elem.name %></span></a>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric"><%= elem.size %></td>
+                                <td class="mdl-data-table__cell--non-numeric"><%= elem.time %></td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <div class="demo-crumbs mdl-color-text--grey-500">
+                        Last Update: <%= time %> UTC
+                    </div>
+                </div>
+            </div>
+            <% if (readme) { %>
+            <div class="demo-container mdl-grid">
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+                <div
+                    class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+                    <span class="mdl-chip">
+                        <span class="mdl-chip__text">readme.md</span>
+                    </span>
+                    <%- readme %>
+                </div>
+            </div>
+            <% } %>
+        </main>
+    </div>
+</body>
+
+</html>
