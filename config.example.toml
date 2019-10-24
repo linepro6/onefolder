@@ -5,5 +5,5 @@ title = "onefolder"
 listen = 3000  #port or unix socket
 
 [common]
-root_path = "/path/"
-view = "chromium"
+root_path = "/path/" #root path for Onedrive's listing
+view = "material" #theme of the web page, now can be "simple", "chromium" or "material"
