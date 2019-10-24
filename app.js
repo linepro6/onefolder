@@ -332,7 +332,7 @@ app.get('/*', async function (req, res) {
                 if (password) {
                     const sha1sum = crypto.createHash('sha1');
                     sha1sum.update(password);
-                    if (sha1sum.digest('hex') === list[i].name.slice(0, list[i].name.indexOf(".password"))) {
+                    if (sha1sum.digest('hex') === list[i].name.toLowerCase().slice(0, list[i].name.indexOf(".password"))) {
                         continue;
                     }
                 }
