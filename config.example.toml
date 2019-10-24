@@ -1,5 +1,5 @@
 # This is an example config, please edit it and rename it to "config.toml".
-title = "onefolder"
+title = "Onefolder" #the name of your website
 
 [server]
 listen = 3000  #port or unix socket

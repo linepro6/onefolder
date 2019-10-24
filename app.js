@@ -279,7 +279,7 @@ class cache_mgr {
                         })
                     continue;
                 }
-                if (list[i].name === "readme.md") {
+                if (list[i].name === "README.md") {
                     await axios.get(await ONEDRIVE.get_download_link(list[i].id))
                         .then(function (resp) {
                             // handle success
@@ -364,12 +364,12 @@ app.get('/*', async function (req, res) {
         }
     }
     if (fetch_file === "") {
-        html.title = "Onedrive directory listing for " + decodeURI(req.path);
+        html.title = "Onedrive directory listing for " + decodeURI(req.path) + " - " + CONFIG.title;
         const date = new Date(list_folder_content.updated_time);
         const time = date.toISOString();
         html.time = time.slice(0, time.indexOf("T")) + " " + time.slice(time.indexOf("T") + 1, time.indexOf("."));
         html.HEAD = list_folder_content.head_html;
-        html.readme = list_folder_content.readme_html;
+        html.README = list_folder_content.readme_html;
         res.set('Content-Type', 'text/html');
         res.render(CONFIG.common.view, html);
     }
